@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jobs Team · Opportunity Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bl: #29ABE2; --bd: #1B3F8B; --bl2: #E3F4FC; --bl3: #EAF6FD;
+    --wh: #FFFFFF; --bg: #F0F2F5; --gr: #9E9E9E; --bk: #1A1A1A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Poppins', sans-serif; background: var(--bg); min-height: 100vh; color: var(--bd); }
+
+  .header {
+    background: var(--wh); padding: 0 28px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid var(--bl2); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-size: 15px; font-weight: 900; color: var(--bd); letter-spacing: 0.5px; text-transform: uppercase; }
+  .logo em { font-style: normal; background: var(--bl); color: white; padding: 2px 7px; border-radius: 5px; font-size: 10px; margin-left: 7px; vertical-align: middle; }
+  .prog-wrap { display: flex; align-items: center; gap: 8px; }
+  .prog-label { font-size: 10px; font-weight: 600; color: var(--gr); }
+  .dots { display: flex; gap: 4px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #DDD; transition: all 0.3s; }
+  .dot.done { background: var(--bl); }
+  .dot.active { background: var(--bd); transform: scale(1.4); }
+
+  .pbar { height: 3px; background: var(--bl2); }
+  .pfill { height: 100%; background: var(--bl); transition: width 0.4s ease; }
+
+  .wrap { max-width: 680px; margin: 0 auto; padding: 36px 18px 80px; }
+
+  .screen { display: none; }
+  .screen.on { display: block; animation: up 0.3s ease; }
+  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  .bcard {
+    background: var(--wh); border: 3px solid var(--bl);
+    border-radius: 20px; padding: 32px; position: relative; margin-bottom: 8px;
+  }
+  .bcard::after {
+    content:''; position: absolute; bottom: -20px; left: 38px;
+    width: 18px; height: 20px; background: var(--bl);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  .bcard::before {
+    content:''; position: absolute; bottom: -16px; left: 40px;
+    width: 14px; height: 16px; background: var(--wh);
+    clip-path: polygon(0 0, 100% 0, 0 100%); z-index: 1;
+  }
+  .bcard.dark { background: var(--bl); border-color: var(--bd); }
+  .bcard.dark::before { background: var(--bl); }
+
+  .wtag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.75); margin-bottom: 12px; }
+  .wtitle { font-size: 32px; font-weight: 900; text-transform: uppercase; line-height: 1.1; letter-spacing: -1px; color: white; margin-bottom: 10px; }
+  .wsub { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.85); }
+
+  .desc { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 24px; font-weight: 400; }
+
+  .steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .step { display: flex; align-items: center; gap: 12px; padding: 13px 15px; background: var(--bl3); border-radius: 12px; }
+  .snum { width: 28px; height: 28px; min-width: 28px; background: var(--bd); color: white; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+  .stxt { font-size: 13px; font-weight: 500; color: var(--bd); }
+
+  .field { margin-bottom: 18px; }
+  .flabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gr); margin-bottom: 6px; display: block; }
+  .finput {
+    width: 100%; padding: 12px 14px; border: 2px solid #E8E8E8; border-radius: 10px;
+    font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500; color: var(--bk);
+    background: white; outline: none; transition: border-color 0.2s, box-shadow 0.2s; resize: none;
+  }
+  .finput:focus { border-color: var(--bl); box-shadow: 0 0 0 3px rgba(41,171,226,0.12); }
+  .finput::placeholder { color: #BDBDBD; font-weight: 400; }
+
+  .ptag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .ptag.urg { background: #FFF3CD; color: #856404; }
+  .ptag.vis { background: var(--bl3); color: var(--bd); }
+  .pdot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .qtitle { font-size: 21px; font-weight: 900; text-transform: uppercase; line-height: 1.15; letter-spacing: -0.4px; color: var(--bd); margin-bottom: 5px; }
+  .qdesc { font-size: 13px; color: var(--gr); line-height: 1.6; margin-bottom: 24px; }
+
+  .pills { display: flex; gap: 7px; flex-wrap: wrap; }
+  .pill { padding: 8px 15px; border: 2px solid #E8E8E8; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; color: var(--gr); background: white; cursor: pointer; transition: all 0.15s; }
+  .pill:hover { border-color: var(--bl); color: var(--bl); }
+  .pill.on { border-color: var(--bd); background: var(--bd); color: white; }
+
+  .div { height: 1px; background: linear-gradient(to right, var(--bl2), transparent); margin: 20px 0; }
+  .slabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--bd); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .slabel::after { content:''; flex:1; height:1px; background: var(--bl2); }
+
+  .rcard { background: white; border: 2px solid #EBEBEB; border-radius: 12px; padding: 15px 17px; margin-bottom: 9px; transition: border-color 0.2s; }
+  .rcard.lit { border-color: var(--bl2); }
+  .rheader { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
+  .rname { font-size: 13px; font-weight: 700; color: var(--bd); margin-bottom: 2px; }
+  .rhint { font-size: 11px; color: var(--gr); line-height: 1.4; }
+  .rbadge { min-width: 36px; height: 36px; border-radius: 9px; background: #F5F5F5; color: var(--gr); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; transition: all 0.2s; flex-shrink: 0; }
+  .rbadge.glow { background: var(--bd); color: white; transform: scale(1.05); }
+  .rbtns { display: flex; gap: 4px; margin-bottom: 5px; }
+  .rb { flex:1; height: 40px; border: 2px solid #EBEBEB; border-radius: 7px; background: white; font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: #CCC; cursor: pointer; transition: all 0.12s; }
+  .rb:hover { border-color: var(--bl); color: var(--bl); background: var(--bl3); }
+  .rb.fill { background: var(--bl3); border-color: var(--bl3); color: var(--bl); }
+  .rb.sel { background: var(--bd); border-color: var(--bd); color: white; }
+  .ranchors { display: flex; justify-content: space-between; font-size: 9px; color: #BDBDBD; font-weight: 500; }
+  .rfb { font-size: 10px; color: var(--bd); font-weight: 600; margin-top: 5px; min-height: 13px; font-style: italic; }
+
+  .brow { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; gap: 10px; }
+  .btnp { display: inline-flex; align-items: center; gap: 7px; background: var(--bd); color: white; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; padding: 13px 24px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btnp:hover:not(:disabled) { background: var(--bl); transform: translateY(-1px); }
+  .btnp:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .btns { display: inline-flex; align-items: center; gap: 7px; background: transparent; color: var(--gr); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; padding: 13px 18px; border-radius: 10px; border: 2px solid #E8E8E8; cursor: pointer; transition: all 0.15s; }
+  .btns:hover { border-color: var(--bl); color: var(--bd); }
+
+  .prev { background: var(--bl3); border: 2px solid var(--bl2); border-radius: 12px; padding: 18px; margin-bottom: 10px; }
+  .prow { display: flex; gap: 8px; margin-bottom: 7px; align-items: flex-start; font-size: 12px; }
+  .prow:last-child { margin-bottom: 0; }
+  .pk { font-weight: 700; color: var(--bd); min-width: 110px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 1px; }
+  .pv { color: var(--bk); font-weight: 500; }
+
+  .spinner-wrap { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gr); padding: 8px 0; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--bl2); border-top-color: var(--bl); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .errmsg { background: #FDECEA; border: 1.5px solid #F5C6C2; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #C0392B; font-weight: 500; margin-top: 12px; display: none; }
+
+  .flogo { text-align: right; margin-top: 20px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: var(--bd); opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">WILLHABEN <em>JOBS TEAM</em></div>
+  <div class="prog-wrap">
+    <span class="prog-label">Fortschritt</span>
+    <div class="dots">
+      <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+    </div>
+  </div>
+</div>
+<div class="pbar"><div class="pfill" id="pf" style="width:0%"></div></div>
+
+<div class="wrap">
+
+  <!-- SCREEN 0: WELCOME -->
+  <div class="screen on" id="s0">
+    <div class="bcard dark" style="margin-bottom:26px;">
+      <div class="wtag">Workshop Vorbereitung · Jobs Team</div>
+      <div class="wtitle">OPPORTUNITY<br>SURVEY</div>
+      <div class="wsub">Deine Einschätzung zählt</div>
+    </div>
+    <div style="height:22px;"></div>
+    <div class="desc">Du beantwortest zwei Fragen zu Opportunities für das Jobs Team — einmal mit kurzfristigem Fokus, einmal mit langem Zeithorizont bis 2030.</div>
+    <div class="field">
+      <label class="flabel">Dein Name</label>
+      <input class="finput" id="pname" type="text" placeholder="z.B. Anna Muster" maxlength="80" oninput="chkName()">
+    </div>
+    <div class="steps">
+      <div class="step"><div class="snum">1</div><div class="stxt"><strong>Urgent Opportunity:</strong> Was sollten wir JETZT anpacken?</div></div>
+      <div class="step"><div class="snum">2</div><div class="stxt"><strong>2030 Vision:</strong> Was ist die größte Opportunity bis 2030?</div></div>
+      <div class="step"><div class="snum" style="background:var(--bl2);color:var(--bd);">⚡</div><div class="stxt" style="color:var(--gr);">Impact Rating: Supply · Demand · Umsatz · Matchmaking</div></div>
+    </div>
+    <button class="btnp" id="btnstart" onclick="go(1)" disabled style="width:100%;justify-content:center;font-size:14px;padding:15px;">Los geht's →</button>
+    <div class="flogo">willhaben</div>
+  </div>
+
+  <!-- SCREEN 1: URGENT -->
+  <div class="screen" id="s1">
+    <div class="ptag urg"><div class="pdot"></div>Frage 1 von 2</div>
+    <div class="qtitle">URGENT OPPORTUNITY</div>
+    <div class="qdesc">Welche Opportunity sollte das Jobs Team <strong>jetzt sofort</strong> angehen?</div>
+    <div class="bcard" style="margin-bottom:24px;">
+      <div class="field">
+        <label class="flabel">Opportunity Titel</label>
+        <input class="finput" id="ut" type="text" placeholder="z.B. Recruiter Self-Service Onboarding" maxlength="100" oninput="chk('u')">
+      </div>
+      <div class="field">
+        <label class="flabel">Zielgruppe <span style="font-size:9px;color:#BDBDBD;font-weight:500;text-transform:none;letter-spacing:0;">(Mehrfachauswahl)</span></label>
+        <div class="pills">
+          <button class="pill" data-v="Jobsuchende" onclick="pill('ug',this)">Jobsuchende</button>
+          <button class="pill" data-v="Unternehmen" onclick="pill('ug',this)">Unternehmen</button>
+          <button class="pill" data-v="Willhaben" onclick="pill('ug',this)">Willhaben</button>
+        </div>
+        <input type="hidden" id="ug">
+      </div>
+      <div class="div"></div>
+      <div class="field">
+        <label class="flabel">Welches Problem löst das konkret?</label>
+        <textarea class="finput" id="up" rows="3" placeholder="Beschreibe das Problem, das diese Opportunity löst..." oninput="chk('u')"></textarea>
+      </div>
+      <div class="field">
+        <label class="flabel">Warum ist es JETZT dringend?</label>
+        <textarea class="finput" id="uw" rows="3" placeholder="Was macht es zeitkritisch — Marktlage, Wettbewerb, interne Faktoren?" oninput="chk('u')"></textarea>
+      </div>
+      <div class="div"></div>
+      <div class="slabel">Impact Bewertung</div>
+      <div id="ur"></div>
+    </div>
+    <div class="brow">
+      <button class="btns" onclick="go(0)">← Zurück</button>
+      <button class="btnp" id="btn2" onclick="go(2)" disabled>Weiter zur Vision →</button>
+    </div>
+    <div class="flogo">willhaben</div>
+  </div>
+
+  <!-- SCREEN 2: 2030 -->
+  <div class="screen" id="s2">
+    <div class="ptag vis"><div class="pdot"></div>Frage 2 von 2</div>
+    <div class="qtitle">BIGGEST OPPORTUNITY 2030</div>
+    <div class="qdesc">Was ist die Opportunity mit dem <strong>größten langfristigen Impact</strong> für das Jobs Team?</div>
+    <div class="bcard" style="margin-bottom:24px;">
+      <div class="field">
+        <label class="flabel">Opportunity Titel</label>
+        <input class="finput" id="vt" type="text" placeholder="z.B. AI-gestütztes Job Matching" maxlength="100" oninput="chk('v')">
+      </div>
+      <div class="field">
+        <label class="flabel">Zielgruppe <span style="font-size:9px;color:#BDBDBD;font-weight:500;text-transform:none;letter-spacing:0;">(Mehrfachauswahl)</span></label>
+        <div class="pills">
+          <button class="pill" data-v="Jobsuchende" onclick="pill('vg',this)">Jobsuchende</button>
+          <button class="pill" data-v="Unternehmen" onclick="pill('vg',this)">Unternehmen</button>
+          <button class="pill" data-v="Willhaben" onclick="pill('vg',this)">Willhaben</button>
+        </div>
+        <input type="hidden" id="vg">
+      </div>
+      <div class="div"></div>
+      <div class="field">
+        <label class="flabel">Welches Problem löst das konkret?</label>
+        <textarea class="finput" id="vp" rows="3" placeholder="Welches strukturelle Problem adressiert diese Opportunity?" oninput="chk('v')"></textarea>
+      </div>
+      <div class="field">
+        <label class="flabel">Warum ist es die größte bis 2030?</label>
+        <textarea class="finput" id="vw" rows="3" placeholder="Warum hat diese Opportunity transformatives Potenzial in 5 Jahren?" oninput="chk('v')"></textarea>
+      </div>
+      <div class="div"></div>
+      <div class="slabel">Impact Bewertung</div>
+      <div id="vr"></div>
+    </div>
+    <div id="errmsg" class="errmsg">⚠ Fehler beim Speichern. Bitte nochmal versuchen.</div>
+    <div class="brow">
+      <button class="btns" onclick="go(1)">← Zurück</button>
+      <button class="btnp" id="btnsubmit" onclick="saveEntry()" disabled>Eintrag speichern ✓</button>
+    </div>
+    <div class="flogo">willhaben</div>
+  </div>
+
+  <!-- SCREEN 3: THANKS -->
+  <div class="screen" id="s3">
+    <div class="bcard" style="margin-bottom:22px;">
+      <div style="font-size:48px;margin-bottom:16px;">✓</div>
+      <div style="font-size:26px;font-weight:900;text-transform:uppercase;color:var(--bd);letter-spacing:-0.4px;margin-bottom:8px;line-height:1.1;">Danke!</div>
+      <div style="font-size:13px;color:var(--gr);line-height:1.7;margin-bottom:0;">Deine Einschätzung wurde gespeichert und fließt in den Workshop ein. Jede Stimme zählt.</div>
+    </div>
+    <div style="height:14px;"></div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--gr);margin-bottom:10px;">Deine Antworten auf einen Blick</div>
+    <div id="prevcont"></div>
+    <button class="btnp" onclick="reset()" style="width:100%;justify-content:center;margin-top:12px;">Neue Antwort eingeben</button>
+    <div class="flogo">willhaben</div>
+  </div>
+
+</div>
+
+<script>
+const SHEET_URL = 'https://script.google.com/a/macros/willhaben.at/s/AKfycbwQzixW8J2UwuaPro6JZ9bANo9NPxPUGLe0WGAJQOR72lseQdBx8fRYqlRJRvEJA0IPhw/exec';
+
+const ZONES = [
+  { id:'supply', name:'Supply Growth', desc:'Wachstum des Angebots auf der Plattform', anchors:['Kein Effekt','Neues Segment erschlossen'], labels:['Kein Effekt','Marginal','Messbar','Deutlich','Game Changer'] },
+  { id:'demand', name:'Demand Growth', desc:'Wachstum der Nachfrage / aktiver Jobsuchender', anchors:['Kein Effekt','Fundamentale Verschiebung'], labels:['Kein Effekt','Marginal','Messbar','Neue Zielgruppe','Game Changer'] },
+  { id:'umsatz', name:'Umsatz', desc:'Direkter Revenue-Beitrag', anchors:['Kein Effekt','Major Revenue Driver >15%'], labels:['Kein Effekt','<1%','<5%','5–15%','>15%'] },
+  { id:'match', name:'Matchmaking', desc:'Qualität & Geschwindigkeit der Vermittlung', anchors:['Keine Verbesserung','Paradigmenwechsel'], labels:['Kein Effekt','Marginal','Messbar','Deutlich','Paradigmenwechsel'] }
+];
+
+let ur = {}, vr = {};
+
+function buildRatings(pre) {
+  document.getElementById(pre+'r').innerHTML = ZONES.map(z => `
+    <div class="rcard" id="${pre}rc-${z.id}">
+      <div class="rheader">
+        <div><div class="rname">${z.name}</div><div class="rhint">${z.desc}</div></div>
+        <div class="rbadge" id="${pre}bd-${z.id}">–</div>
+      </div>
+      <div class="rbtns">${[1,2,3,4,5].map(n=>`<button class="rb" onclick="rate('${pre}','${z.id}',${n})">${n}</button>`).join('')}</div>
+      <div class="ranchors"><span>${z.anchors[0]}</span><span>${z.anchors[1]}</span></div>
+      <div class="rfb" id="${pre}fb-${z.id}"></div>
+    </div>`).join('');
+}
+buildRatings('u'); buildRatings('v');
+
+function rate(pre, zid, val) {
+  const obj = pre==='u' ? ur : vr;
+  obj[zid] = val;
+  const z = ZONES.find(z=>z.id===zid);
+  document.querySelectorAll(`#${pre}rc-${zid} .rb`).forEach((b,i) => {
+    b.classList.toggle('fill', i < val-1);
+    b.classList.toggle('sel', i === val-1);
+  });
+  const bd = document.getElementById(`${pre}bd-${zid}`);
+  bd.textContent = val; bd.classList.add('glow');
+  document.getElementById(`${pre}rc-${zid}`).classList.add('lit');
+  document.getElementById(`${pre}fb-${zid}`).textContent = val + ' — ' + z.labels[val-1];
+  chk(pre);
+}
+
+function pill(fid, btn) {
+  btn.classList.toggle('on');
+  const vals = Array.from(btn.closest('.pills').querySelectorAll('.pill.on')).map(p=>p.dataset.v);
+  document.getElementById(fid).value = vals.join(', ');
+  chk(fid.startsWith('u') ? 'u' : 'v');
+}
+
+function chkName() {
+  document.getElementById('btnstart').disabled = !document.getElementById('pname').value.trim();
+}
+
+function chk(pre) {
+  const obj = pre==='u' ? ur : vr;
+  const ok =
+    document.getElementById(pre+'t').value.trim() &&
+    document.getElementById(pre+'g').value &&
+    document.getElementById(pre+'p').value.trim() &&
+    document.getElementById(pre+'w').value.trim() &&
+    ZONES.every(z => obj[z.id]);
+  document.getElementById(pre==='u' ? 'btn2' : 'btnsubmit').disabled = !ok;
+}
+
+function go(n) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s'+n).classList.add('on');
+  document.getElementById('pf').style.width = [0,30,65,100][n] + '%';
+  for(let i=0;i<4;i++) {
+    const d = document.getElementById('d'+i);
+    d.className = 'dot' + (i<n?' done':i===n?' active':'');
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function saveEntry() {
+  const btn = document.getElementById('btnsubmit');
+  const err = document.getElementById('errmsg');
+  btn.disabled = true;
+  err.style.display = 'none';
+  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;"></div> Wird gespeichert...';
+
+  const entry = {
+    timestamp: new Date().toLocaleString('de-AT'),
+    name: document.getElementById('pname').value.trim(),
+    urgent_titel: document.getElementById('ut').value.trim(),
+    urgent_zielgruppe: document.getElementById('ug').value,
+    urgent_problem: document.getElementById('up').value.trim(),
+    urgent_warum_jetzt: document.getElementById('uw').value.trim(),
+    urgent_supply: ur.supply, urgent_demand: ur.demand, urgent_umsatz: ur.umsatz, urgent_match: ur.match,
+    vision_titel: document.getElementById('vt').value.trim(),
+    vision_zielgruppe: document.getElementById('vg').value,
+    vision_problem: document.getElementById('vp').value.trim(),
+    vision_warum_2030: document.getElementById('vw').value.trim(),
+    vision_supply: vr.supply, vision_demand: vr.demand, vision_umsatz: vr.umsatz, vision_match: vr.match,
+  };
+
+  try {
+    const url = SHEET_URL + '?data=' + encodeURIComponent(JSON.stringify(entry));
+    
+    // Zeige URL im Debug
+    console.log('Sending to:', url);
+    
+    const response = await fetch(url, { method: 'GET', mode: 'cors' });
+    const result = await response.json();
+    console.log('Response:', result);
+    
+    if (result.status === 'ok') {
+      showPreview(entry);
+      go(3);
+    } else {
+      throw new Error(result.msg || 'Unbekannter Fehler');
+    }
+  } catch(e) {
+    console.error('Fetch error:', e);
+    err.innerHTML = '⚠ Fehler: ' + e.message + '<br><small>Öffne F12 → Console für Details</small>';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Eintrag speichern ✓';
+  }
+}
+
+function showPreview(e) {
+  document.getElementById('prevcont').innerHTML = `
+    <div class="prev" style="margin-bottom:10px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--bl);margin-bottom:10px;">⚡ Urgent Opportunity</div>
+      <div class="prow"><span class="pk">Name</span><span class="pv">${e.name}</span></div>
+      <div class="prow"><span class="pk">Titel</span><span class="pv">${e.urgent_titel}</span></div>
+      <div class="prow"><span class="pk">Zielgruppe</span><span class="pv">${e.urgent_zielgruppe}</span></div>
+      <div class="prow"><span class="pk">Ratings</span><span class="pv">Supply ${e.urgent_supply} · Demand ${e.urgent_demand} · Umsatz ${e.urgent_umsatz} · Matching ${e.urgent_match}</span></div>
+    </div>
+    <div class="prev">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--bd);margin-bottom:10px;">🎯 Vision 2030</div>
+      <div class="prow"><span class="pk">Titel</span><span class="pv">${e.vision_titel}</span></div>
+      <div class="prow"><span class="pk">Zielgruppe</span><span class="pv">${e.vision_zielgruppe}</span></div>
+      <div class="prow"><span class="pk">Ratings</span><span class="pv">Supply ${e.vision_supply} · Demand ${e.vision_demand} · Umsatz ${e.vision_umsatz} · Matching ${e.vision_match}</span></div>
+    </div>`;
+}
+
+function reset() {
+  ['ut','up','uw','vt','vp','vw','pname'].forEach(id => document.getElementById(id).value = '');
+  ['ug','vg'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+  ur = {}; vr = {};
+  buildRatings('u'); buildRatings('v');
+  ['btn2','btnsubmit','btnstart'].forEach(id => document.getElementById(id).disabled = true);
+  go(0);
+}
+</script>
+</body>
+</html>
